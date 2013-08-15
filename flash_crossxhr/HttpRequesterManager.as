@@ -1,26 +1,36 @@
-package {
+﻿package {
   import flash.display.Sprite;
   public class HttpRequesterManager extends Sprite {
     import flash.external.ExternalInterface;
     import HttpRequester;
     import flash.system.Security;
     Security.allowDomain("*");
+	Security.allowInsecureDomain("*");
 
     private var objects:Object;
-    
+
     public function HttpRequesterManager():void {
         super();
-        ExternalInterface.addCallback("create", create); 
-        ExternalInterface.addCallback("addHeader", addHeader); 
-        ExternalInterface.addCallback("send", send); 
-        ExternalInterface.addCallback("finished", finished); 
+        ExternalInterface.addCallback("create", create);
+        ExternalInterface.addCallback("abort", abort);
+        ExternalInterface.addCallback("addHeader", addHeader);
+        ExternalInterface.addCallback("send", send);
+        ExternalInterface.addCallback("finished", finished);
         ExternalInterface.call("eval", "FlashHttpRequest_ready = 1");
         objects = new Object();
     }
 
+	public function log(msg):void {
+		ExternalInterface.call("findaway.console", "debug", msg);
+	}
+
     public function create(id:Number, method:String, url:String):void {
         var requester:HttpRequester = new HttpRequester(this, id, method, url);
         objects[id] = requester;
+    }
+
+    public function abort(id:Number):void {
+        objects[id].abort();
     }
 
     public function addHeader(id:String, name:String, value:String):void {
