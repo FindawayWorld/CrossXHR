@@ -5,17 +5,34 @@
     window.FlashHttpRequest_ready = false;
     var FlashHttpRequest_objects = {},
         FlashHttpRequest_counter = 0,
-        FlashHttpRequest_handler = function (id, status, data) {
-            FlashHttpRequest_objects[id].handler(status, data);
-        },
-        setupCrossXHR = function (swfUrl) {
-            embedFlash(swfUrl);
-        },
-        FlashHttpRequest_callback = function () {
-            window.FlashHttpRequest_ready = true;
-        };
 
-    var CrossXHR = function () {
+    FlashHttpRequest_handler = function (id, status, data) {
+        FlashHttpRequest_objects[id].handler(status, data);
+    },
+
+    FlashHttpRequest_callback = function () {
+        window.FlashHttpRequest_ready = true;
+    },
+
+    setupCrossXHR = function (swfUrl) {
+        var span1 = document.createElement('span'),
+            span2 = document.createElement('span');
+
+        span1.style.position = 'absolute';
+        span1.style.top = '0';
+        span1.style.left = '0';
+        span1.style.height = '1px';
+        span1.style.width = '1px';
+        span1.style.display = 'block';
+
+        span2.id = 'FlashHttpRequest_gateway';
+
+        span1.appendChild(span2);
+        document.body.appendChild(span1);
+        swfobject.embedSWF(swfUrl, span2, 1, 1, 9, "expressInstall.swf", {}, {wmode: 'transparent', allowscriptaccess:"always"});
+    },
+
+    CrossXHR = function () {
         var obj;
         var max_wait = 100;
         this.gateway = document.getElementById("FlashHttpRequest_gateway");
@@ -28,17 +45,6 @@
             throw new Error('You need to run setupCrossXHR() first.');
         }
 
-        return this;
-    };
-
-    CrossXHR.prototype.processQueue = function () {
-        var self = this;
-        if (self.queue.length === 0 || !window.FlashHttpRequest_ready) {
-            return this;
-        }
-        for (var i=0;i<self.queue.length;i++) {
-            self.queue[i].call(self);
-        }
         return this;
     };
 
@@ -103,24 +109,6 @@
                 self.onload.apply(data);
             }
         }, 10);
-    };
-
-    var embedFlash = function (swfUrl, callback) {
-        var span1 = document.createElement('span'),
-            span2 = document.createElement('span');
-
-        span1.style.position = 'absolute';
-        span1.style.top = '0';
-        span1.style.left = '0';
-        span1.style.height = '1px';
-        span1.style.width = '1px';
-        span1.style.display = 'block';
-
-        span2.id = 'FlashHttpRequest_gateway';
-
-        span1.appendChild(span2);
-        document.body.appendChild(span1);
-        swfobject.embedSWF(swfUrl, span2, 1, 1, 9, "expressInstall.swf", {}, {wmode: 'transparent', allowscriptaccess:"always"});
     };
 
     window.CrossXHR = CrossXHR;
