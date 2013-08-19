@@ -10,6 +10,9 @@
         },
         setupCrossXHR = function (swfUrl) {
             embedFlash(swfUrl);
+        },
+        FlashHttpRequest_callback = function () {
+            window.FlashHttpRequest_ready = true;
         };
 
     var CrossXHR = function () {
@@ -106,7 +109,13 @@
         var span1 = document.createElement('span'),
             span2 = document.createElement('span');
 
-        span1.style = 'position:absolute;top:0;left:0';
+        span1.style.position = 'absolute';
+        span1.style.top = '0';
+        span1.style.left = '0';
+        span1.style.height = '1px';
+        span1.style.width = '1px';
+        span1.style.display = 'block';
+
         span2.id = 'FlashHttpRequest_gateway';
 
         span1.appendChild(span2);
@@ -117,6 +126,7 @@
     window.CrossXHR = CrossXHR;
     window.FlashHttpRequest_handler = FlashHttpRequest_handler;
     window.setupCrossXHR = setupCrossXHR;
+    window.FlashHttpRequest_callback = FlashHttpRequest_callback;
 
     return CrossXHR;
 })(this, this.document);

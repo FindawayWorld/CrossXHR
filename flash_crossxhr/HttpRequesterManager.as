@@ -16,7 +16,7 @@
         ExternalInterface.addCallback("addHeader", addHeader);
         ExternalInterface.addCallback("send", send);
         ExternalInterface.addCallback("finished", finished);
-        ExternalInterface.call("eval", "FlashHttpRequest_ready = 1");
+        ExternalInterface.call("FlashHttpRequest_callback");
         objects = new Object();
     }
 
