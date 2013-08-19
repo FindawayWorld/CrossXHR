@@ -20,7 +20,7 @@
         objects = new Object();
     }
 
-	public function log(msg):void {
+	public function log(msg:*):void {
 		ExternalInterface.call("findaway.console", "debug", msg);
 	}
 

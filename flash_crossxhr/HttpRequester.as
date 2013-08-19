@@ -31,7 +31,7 @@
 			}
 		}
 
-        private function done (stat:Number, response):void {
+        private function done (stat:Number, response:String):void {
             loader.removeEventListener(Event.COMPLETE, handler);
             loader.removeEventListener(IOErrorEvent.IO_ERROR, handler);
 
@@ -52,9 +52,9 @@
             var header:URLRequestHeader = new URLRequestHeader(name, value);
 			parent.log(header);
             if (!request.requestHeaders)
-              request.requestHeaders = new Array(header);
+                request.requestHeaders = new Array(header);
             else
-              request.requestHeaders.push(header);
+                request.requestHeaders.push(header);
         }
 
         public function send(data:String):void {
