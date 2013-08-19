@@ -38,7 +38,6 @@
         this.gateway = document.getElementById("FlashHttpRequest_gateway");
         var self = this;
         this.id = FlashHttpRequest_counter++;
-        this.queue = [];
         FlashHttpRequest_objects[this.id] = this;
 
         if (!this.gateway) {
@@ -50,49 +49,25 @@
 
     CrossXHR.prototype.open = function(arg1,arg2) {
         var self = this;
-        if (!window.FlashHttpRequest_ready) {
-            self.queue.push(function () {
-                self.open.call(self, arg1, arg2);
-            });
-            return this;
-        }
-        this.gateway.create(this.id, arg1,arg2);
+        self.gateway.create(self.id, arg1,arg2);
         return this;
     };
 
     CrossXHR.prototype.abort = function () {
         var self = this;
-        if (!window.FlashHttpRequest_ready) {
-            self.queue.push(function () {
-                self.abort.call(self);
-            });
-            return this;
-        }
-        this.gateway.abort(this.id);
+        self.gateway.abort(self.id);
         return this;
     };
 
     CrossXHR.prototype.setRequestHeader = function (key, value) {
         var self = this;
-        if (!window.FlashHttpRequest_ready) {
-            self.queue.push(function () {
-                self.setRequestHeader.call(self, key, value);
-            });
-            return this;
-        }
-        this.gateway.addHeader(this.id, key, value);
+        self.gateway.addHeader(self.id, key, value);
         return this;
     };
 
     CrossXHR.prototype.send = function(arg1) {
         var self = this;
-        if (!window.FlashHttpRequest_ready) {
-            self.queue.push(function () {
-                self.send.call(self, arg1);
-            });
-            return this;
-        }
-        this.gateway.send(this.id, arg1);
+        self.gateway.send(self.id, arg1);
         return this;
     };
 
