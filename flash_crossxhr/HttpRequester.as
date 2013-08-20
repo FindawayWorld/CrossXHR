@@ -42,7 +42,7 @@
             method:String, url:String):void {
             id = id_;
             parent = parent_;
-			parent.log(url);
+			parent.log(id, url);
             request = new URLRequest(url);
             request.method = getMethod(method);
             loader = new URLLoader();
@@ -50,7 +50,7 @@
 
         public function addHeader(name:String, value:String):void {
             var header:URLRequestHeader = new URLRequestHeader(name, value);
-			parent.log(header);
+			parent.log(id, header);
             if (!request.requestHeaders)
                 request.requestHeaders = new Array(header);
             else
@@ -68,7 +68,7 @@
         }
 
 		public function statusEvent(event:HTTPStatusEvent):void {
-			parent.log(event);
+			parent.log(id, event);
 			status = event.status;
 		}
 
@@ -78,7 +78,7 @@
         }
 
         public function handler(e:Event):void {
-		  parent.log(e);
+		  parent.log(id, e);
           done(status, loader.data);
         }
     }

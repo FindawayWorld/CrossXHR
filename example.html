@@ -23,7 +23,7 @@
         <script src="https://cdn.findawayworld.com/static/libs/underscore.js/1.5.1/underscore-min.js"></script>
         <script src="dist/CrossXHR-0.1.0.js"></script>
         <script>
-            setupCrossXHR('/flash_crossxhr/crossxhr.swf');
+            crossxhr_setup('/flash_crossxhr/crossxhr.swf');
             var parameterize = function (object) {
                 var pArr = [];
                 _.each(object, function (value, key, list) {
@@ -39,7 +39,7 @@
                         headers: {}
                     }, opts),
                     params,
-                    request = new CrossXHR();
+                    request = new CrossXHR({ debug:true });
 
                 request.onload = function () {
                     if (request.readyState == 4) {

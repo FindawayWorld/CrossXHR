@@ -2,19 +2,32 @@
 (function (window, document, undefined) {
     'use strict';
 
+    var crossxhr_objects = {},
+        crossxhr_counter = 0,
+        crossxhr_ready = false,
+        CrossXHR;
+
+    // Legacy 'ready' flag
     window.FlashHttpRequest_ready = false;
-    var FlashHttpRequest_objects = {},
-        FlashHttpRequest_counter = 0,
 
-    FlashHttpRequest_handler = function (id, status, data) {
-        FlashHttpRequest_objects[id].handler(status, data);
-    },
+    window.crossxhr_flashInit = function () {
+        crossxhr_ready = true;
+        FlashHttpRequest_ready = 1;
+    };
 
-    FlashHttpRequest_callback = function () {
-        window.FlashHttpRequest_ready = true;
-    },
+    window.crossxhr_callback = function (id, status, data) {
+        crossxhr_objects[id].handler(status, data);
+    };
 
-    setupCrossXHR = function (swfUrl) {
+    window.crossxhr_log = function (id, message) {
+        crossxhr_objects[id].log(message);
+    };
+
+    window.crossxhr_setup = function (swfUrl) {
+        if (document.getElementById("FlashHttpRequest_gateway")) {
+            return this;
+        }
+
         var span1 = document.createElement('span'),
             span2 = document.createElement('span');
 
@@ -30,21 +43,35 @@
         span1.appendChild(span2);
         document.body.appendChild(span1);
         swfobject.embedSWF(swfUrl, span2, 1, 1, 9, "expressInstall.swf", {}, {wmode: 'transparent', allowscriptaccess:"always"});
-    },
+        return this;
+    };
 
-    CrossXHR = function () {
-        var obj;
-        var max_wait = 100;
-        this.gateway = document.getElementById("FlashHttpRequest_gateway");
+    CrossXHR = function (options) {
+        if (!crossxhr_ready || !FlashHttpRequest_ready) {
+            throw new Error('CrossXHR flash was not loaded.');
+        }
         var self = this;
-        this.id = FlashHttpRequest_counter++;
-        FlashHttpRequest_objects[this.id] = this;
+        options = options || {};
+        self.gateway = document.getElementById("FlashHttpRequest_gateway");
 
-        if (!this.gateway) {
+        if (!self.gateway) {
             throw new Error('You need to run setupCrossXHR() first.');
         }
 
+        self.id = crossxhr_counter++;
+        crossxhr_objects[self.id] = self;
+        self.debug = options.debug || false;
+
         return this;
+    };
+
+    CrossXHR.prototype.log = function (message) {
+        var self = this;
+        if (!self.debug || !window.console ) {
+            return false;
+        }
+        message = typeof message === 'string' ? 'CrossXHR: ' + message : ['CrossXHR', message];
+        return console.log(message);
     };
 
     CrossXHR.prototype.open = function(arg1,arg2) {
@@ -87,9 +114,9 @@
     };
 
     window.CrossXHR = CrossXHR;
-    window.FlashHttpRequest_handler = FlashHttpRequest_handler;
-    window.setupCrossXHR = setupCrossXHR;
-    window.FlashHttpRequest_callback = FlashHttpRequest_callback;
+
+    // Legacy methods
+    window.FlashHttpRequest_handler = crossxhr_callback;
 
     return CrossXHR;
 })(this, this.document);
