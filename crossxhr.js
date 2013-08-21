@@ -2,7 +2,7 @@
 (function (window, document) {
     'use strict';
 
-    var crossxhr_objects = {},
+    var crossxhr_objects = [],
         crossxhr_ready = false,
         CrossXHR;
 
@@ -110,6 +110,8 @@
             if(self.onload) {
                 self.onload.apply(data);
             }
+            // Remove from objects array.
+            crossxhr_objects.splice(self.id, 1);
         }, 10);
     };
 
