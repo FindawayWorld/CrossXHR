@@ -46,9 +46,11 @@
                         try {
                             if (request.status != 200) {
                                 alert('error detected 1');
+                                request.log(request.responseText);
                             } else {
                                 // ok, process...
                                 alert("got data: " + request.responseText);
+                                request.log(request.responseText);
                             }
                         } catch(e) {
                             alert('error detected 2');

@@ -3,7 +3,6 @@
     'use strict';
 
     var crossxhr_objects = {},
-        crossxhr_counter = 0,
         crossxhr_ready = false,
         CrossXHR;
 
@@ -58,8 +57,9 @@
             throw new Error('You need to run setupCrossXHR() first.');
         }
 
-        self.id = crossxhr_counter++;
-        crossxhr_objects[self.id] = self;
+        self.id = crossxhr_objects.length;
+        crossxhr_objects.push(self);
+
         self.debug = options.debug || false;
 
         return this;
@@ -74,9 +74,9 @@
         return console.log(message);
     };
 
-    CrossXHR.prototype.open = function(arg1,arg2) {
+    CrossXHR.prototype.open = function (arg1, arg2) {
         var self = this;
-        self.gateway.create(self.id, arg1,arg2);
+        self.gateway.create(self.id, arg1, arg2);
         return this;
     };
 
@@ -92,13 +92,13 @@
         return this;
     };
 
-    CrossXHR.prototype.send = function(arg1) {
+    CrossXHR.prototype.send = function (arg1) {
         var self = this;
         self.gateway.send(self.id, arg1);
         return this;
     };
 
-    CrossXHR.prototype.handler = function(status, data) {
+    CrossXHR.prototype.handler = function (status, data) {
         var self = this;
 
         self.readyState = 4;
