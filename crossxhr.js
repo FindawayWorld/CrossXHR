@@ -1,5 +1,5 @@
 
-(function (window, document, undefined) {
+(function (window, document) {
     'use strict';
 
     var crossxhr_objects = {},
