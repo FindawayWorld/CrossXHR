@@ -16,12 +16,12 @@
         ExternalInterface.addCallback("addHeader", addHeader);
         ExternalInterface.addCallback("send", send);
         ExternalInterface.addCallback("finished", finished);
-        ExternalInterface.call("eval", "FlashHttpRequest_ready = 1");
+        ExternalInterface.call("crossxhr_flashInit");
         objects = new Object();
     }
 
-	public function log(msg):void {
-		ExternalInterface.call("findaway.console", "debug", msg);
+	public function log(id:Number, msg:*):void {
+		ExternalInterface.call("crossxhr_log", id, msg);
 	}
 
     public function create(id:Number, method:String, url:String):void {
@@ -41,7 +41,7 @@
     }
 
     public function handler(id:String, status:String, data:String):void {
-        ExternalInterface.call("FlashHttpRequest_handler", id, status, data);
+        ExternalInterface.call("crossxhr_callback", id, status, data);
     }
     public function finished(id:String):void {
         objects[id] = null;

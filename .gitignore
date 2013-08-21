@@ -1,0 +1,4 @@
+node_modules/
+dist/
+flash_crossxhr/*.swf
+flash_crossxhr/true
