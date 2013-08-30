@@ -3,16 +3,11 @@
     'use strict';
 
     var crossxhr_objects = [],
-        crossxhr_ready = false,
         CrossXHR;
 
     // Legacy 'ready' flag
     window.FlashHttpRequest_ready = false;
-
-    window.crossxhr_flashInit = function () {
-        crossxhr_ready = true;
-        FlashHttpRequest_ready = 1;
-    };
+    window.crossxhr_ready = false;
 
     window.crossxhr_callback = function (id, status, data) {
         crossxhr_objects[id].handler(status, data);
@@ -22,17 +17,29 @@
         crossxhr_objects[id].log(message);
     };
 
-    window.crossxhr_setup = function (swfUrl) {
+    window.crossxhr_setup = function (swfUrl, callback) {
         if (document.getElementById("FlashHttpRequest_gateway")) {
             return this;
         }
 
-        var span1 = document.createElement('span'),
-            span2 = document.createElement('span');
+        window.crossxhr_flashInit = function () {
+            crossxhr_ready = true;
+            FlashHttpRequest_ready = 1;
+            if (typeof callback === 'function') {
+                callback();
+            }
+        };
+
+        var params = {
+            allowscriptaccess:"always",
+            'hasPriority': 'true'
+        },
+        span1 = document.createElement('span'),
+        span2 = document.createElement('span');
 
         span1.style.position = 'absolute';
-        span1.style.top = '0';
-        span1.style.left = '0';
+        span1.style.bottom = '-1px';
+        span1.style.left = '-1px';
         span1.style.height = '1px';
         span1.style.width = '1px';
         span1.style.display = 'block';
@@ -41,15 +48,16 @@
 
         span1.appendChild(span2);
         document.body.appendChild(span1);
-        swfobject.embedSWF(swfUrl, span2, 1, 1, 9, "expressInstall.swf", {}, {wmode: 'transparent', allowscriptaccess:"always"});
+        swfobject.embedSWF(swfUrl, 'FlashHttpRequest_gateway', 100, 100, 9, "expressInstall.swf", {}, params);
         return this;
     };
 
     CrossXHR = function (options) {
-        if (!crossxhr_ready || !FlashHttpRequest_ready) {
-            throw new Error('CrossXHR flash was not loaded.');
-        }
         var self = this;
+        if (!window.crossxhr_ready || !window.FlashHttpRequest_ready) {
+            throw new Error('Flash not loaded.');
+        }
+
         options = options || {};
         self.gateway = document.getElementById("FlashHttpRequest_gateway");
 
@@ -111,7 +119,7 @@
                 self.onload.apply(data);
             }
             // Remove from objects array.
-            crossxhr_objects.splice(self.id, 1);
+            //crossxhr_objects.splice(self.id, 1);
         }, 10);
     };
 

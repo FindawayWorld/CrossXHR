@@ -18,12 +18,15 @@
         <p>Click the "test error detection" button to attempt to load an invalid URL "http://www.pliantdev.com/support/does-not-exist.xml"</p>
         <input type="button" onclick="test_post()" value="test post request">
 
+        <p></p>
+        <input type="button" onclick="test_put()" value="test put request">
+
         <p>It is instructive to view the HTML source of this page. More information can be found at the <a href="http://code.google.com/p/crossxhr/">CrossXHR homepage</a>.</p>
 
         <script src="https://cdn.findawayworld.com/static/libs/underscore.js/1.5.1/underscore-min.js"></script>
         <script src="dist/CrossXHR-0.1.0.js"></script>
         <script>
-            crossxhr_setup('/flash_crossxhr/crossxhr.swf');
+            crossxhr_setup('http://cdn.findawayworld.com/static/swf/vendor/crossxhr.swf');
             var parameterize = function (object) {
                 var pArr = [];
                 _.each(object, function (value, key, list) {
@@ -46,7 +49,7 @@
                         try {
                             if (request.status != 200) {
                                 alert('error detected 1');
-                                request.log(request.responseText);
+                                request.log(request.status);
                             } else {
                                 // ok, process...
                                 alert("got data: " + request.responseText);
@@ -80,7 +83,7 @@
 
             function test_get() {
                 makeRequest({
-                    url: 'http://crossxhrtest.findawayworld.com/example.json',
+                    url: 'https://apitest.findawayworld.com/v1/accounts/4444/audiobooks?sid=15f1231b-6c29-4600-b927-4624c7d9c882',
                     method: 'GET'
                 });
             }
@@ -98,7 +101,18 @@
                         foo:'bar',
                         bar:'baz'
                     }
-                })
+                });
+            }
+
+            function test_put() {
+                makeRequest({
+                    url: 'http://crossxhrtest.findawayworld.com/example.json',
+                    method: 'PUT',
+                    data: {
+                        foo:'bar',
+                        bar:'baz'
+                    }
+                });
             }
         </script>
     </body>

@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                     dot: true,
                     src: [
                         '.tmp',
-                        'dist/*',
+                        'dist/*.js',
                         '!dist/.git*'
                     ]
                 }]

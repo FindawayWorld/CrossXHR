@@ -2,6 +2,7 @@
 {
     public dynamic class HttpRequester
     {
+        import com.adobe.serialization.json.JSON;
         import flash.errors.IOError;
         import flash.net.URLLoader;
         import flash.net.URLRequest;
@@ -31,10 +32,9 @@
 			}
 		}
 
-        private function done (stat:Number, response:String):void {
+        private function done (stat:Number, response:*):void {
             loader.removeEventListener(Event.COMPLETE, handler);
             loader.removeEventListener(IOErrorEvent.IO_ERROR, handler);
-
             parent.handler(id, stat, response);
         }
 
@@ -78,8 +78,12 @@
         }
 
         public function handler(e:Event):void {
-		  parent.log(id, e);
-          done(status, loader.data);
+            var data:Object = com.adobe.serialization.json.JSON.decode(e.target.data);
+            parent.log(id, 'handler event:');
+            parent.log(id, e.toString());
+            parent.log(id, 'handler data:');
+            parent.log(id, data);
+            done(status, data);
         }
     }
 }
