@@ -87,6 +87,19 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
+    grunt.registerTask('ant', function () {
+        var done = this.async();
+        grunt.util.spawn({
+            cmd: 'ant',
+            grunt: false,
+            opts: {
+                cwd: 'flash_crossxhr'
+            }
+        }, function (error, result, code) {
+            done();
+        });
+    });
+
     grunt.registerTask('deps',  ['uglify:deps'])
     grunt.registerTask('build', ['clean:dist', 'jshint:before','concat']);
     grunt.registerTask('min',   ['build', 'uglify:sdk']);

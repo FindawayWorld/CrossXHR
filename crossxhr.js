@@ -3,7 +3,16 @@
     'use strict';
 
     var crossxhr_objects = [],
-        CrossXHR;
+        CrossXHR,
+        gatewayName = 'FlashHttpRequest_gateway',
+        getGateway = function () {
+            if (navigator.appName.indexOf("Microsoft") != -1) {
+                return window[gatewayName];
+            } else {
+                return document[gatewayName];
+            }
+            return false;
+        };
 
     // Legacy 'ready' flag
     window.FlashHttpRequest_ready = false;
@@ -18,7 +27,7 @@
     };
 
     window.crossxhr_setup = function (swfUrl, callback) {
-        if (document.getElementById("FlashHttpRequest_gateway")) {
+        if (getGateway()) {
             return this;
         }
 
@@ -38,17 +47,18 @@
         span2 = document.createElement('span');
 
         span1.style.position = 'absolute';
-        span1.style.bottom = '-1px';
-        span1.style.left = '-1px';
-        span1.style.height = '1px';
-        span1.style.width = '1px';
+        span1.style.bottom = '-9999px';
+        span1.style.left = '-9999px';
+        span1.style.height = '6px';
+        span1.style.width = '6px';
         span1.style.display = 'block';
+        span1.style.zIndex = '10000';
 
-        span2.id = 'FlashHttpRequest_gateway';
+        span2.id = gatewayName;
 
         span1.appendChild(span2);
         document.body.appendChild(span1);
-        swfobject.embedSWF(swfUrl, 'FlashHttpRequest_gateway', 100, 100, 9, "expressInstall.swf", {}, params);
+        swfobject.embedSWF(swfUrl, gatewayName, 6, 6, 9, "expressInstall.swf", {}, params);
         return this;
     };
 
@@ -59,7 +69,7 @@
         }
 
         options = options || {};
-        self.gateway = document.getElementById("FlashHttpRequest_gateway");
+        self.gateway = getGateway();
 
         if (!self.gateway) {
             throw new Error('You need to run setupCrossXHR() first.');

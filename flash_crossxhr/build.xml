@@ -5,7 +5,9 @@
     <property environment="env" />
     <property name="FLEX_HOME" value="${env.FLEX_HOME}" />
     <property name="OUTPUT_DIR" value="../dist/" />
-    <property name="OUTPUT_FILE" value="${OUTPUT_DIR}/crossxhr.swf" />
+    <property name="VERSION" value="0.2.0"/>
+    <property name="OUTPUT_FILE" value="${OUTPUT_DIR}/crossxhr-${VERSION}.swf" />
+
     <condition property="MXMLC" value="mxmlc.exe">
         <os family="windows" />
     </condition>

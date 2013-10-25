@@ -16,8 +16,8 @@
         ExternalInterface.addCallback("addHeader", addHeader);
         ExternalInterface.addCallback("send", send);
         ExternalInterface.addCallback("finished", finished);
-        ExternalInterface.call("crossxhr_flashInit");
         objects = new Object();
+        ExternalInterface.call("crossxhr_flashInit");
     }
 
 	public function log(id:Number, msg:*):void {
@@ -27,6 +27,7 @@
     public function create(id:Number, method:String, url:String):void {
         var requester:HttpRequester = new HttpRequester(this, id, method, url);
         objects[id] = requester;
+        log(id, 'Created ' + id);
     }
 
     public function abort(id:Number):void {

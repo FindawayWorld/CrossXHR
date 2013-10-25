@@ -18,16 +18,22 @@
         private var parent:Object;
 		private var status:Number;
         private var loader:URLLoader;
+        private var origMethod:String;
 		private function getMethod (method:String):String {
+
 			switch(method.toLowerCase()) {
 				case 'post':
-					return URLRequestMethod.POST;
+                    origMethod = 'POST';
+                    return URLRequestMethod.POST;
                 case 'put':
-                    return URLRequestMethod.PUT;
+                    origMethod = 'PUT';
+                    return URLRequestMethod.POST;
                 case 'delete':
-                    return URLRequestMethod.DELETE;
+                    origMethod = 'DELETE';
+                    return URLRequestMethod.POST;
                 case 'get':
                 default:
+                    origMethod = 'GET';
                     return URLRequestMethod.GET;
 			}
 		}
@@ -38,11 +44,10 @@
             parent.handler(id, stat, response);
         }
 
-        public function HttpRequester(parent_:Object,id_:Number,
-            method:String, url:String):void {
+        public function HttpRequester(parent_:Object,id_:Number, method:String, url:String):void {
             id = id_;
             parent = parent_;
-			parent.log(id, url);
+            parent.log(id, url);
             request = new URLRequest(url);
             request.method = getMethod(method);
             loader = new URLLoader();
@@ -58,9 +63,18 @@
         }
 
         public function send(data:String):void {
-            if (request.method == 'POST')
-              request.data = data;
-            loader.addEventListener(Event.COMPLETE, handler);
+            parent.log(id, 'Original Method: ' + origMethod);
+            parent.log(id, 'Request Method: ' + request.method);
+
+            if (data && (origMethod != 'POST' && origMethod != 'GET') )
+                data += '&_method=' + origMethod;
+            else if (!data && (origMethod != 'POST' && origMethod != 'GET') )
+                data = '_method=' + origMethod;
+
+            if (request.method == 'POST' && data)
+                request.data = data;
+
+            loader.addEventListener(Event.COMPLETE, handler, false, 1);
 			loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, statusEvent);
             loader.addEventListener(IOErrorEvent.IO_ERROR, handler);
             loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handler);
@@ -78,11 +92,20 @@
         }
 
         public function handler(e:Event):void {
-            var data:Object = com.adobe.serialization.json.JSON.decode(e.target.data);
+            var data:Object;
+
+            parent.log(id, status);
+            parent.log(id, loader.data);
+
+            if (e.target.data)
+                data = com.adobe.serialization.json.JSON.decode(e.target.data);
+            else
+                data = {};
+
             parent.log(id, 'handler event:');
             parent.log(id, e.toString());
             parent.log(id, 'handler data:');
-            parent.log(id, data);
+            parent.log(id, data.toString());
             done(status, data);
         }
     }

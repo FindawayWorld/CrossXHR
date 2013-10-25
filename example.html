@@ -24,9 +24,9 @@
         <p>It is instructive to view the HTML source of this page. More information can be found at the <a href="http://code.google.com/p/crossxhr/">CrossXHR homepage</a>.</p>
 
         <script src="https://cdn.findawayworld.com/static/libs/underscore.js/1.5.1/underscore-min.js"></script>
-        <script src="dist/CrossXHR-0.1.0.js"></script>
+        <script src="dist/CrossXHR-0.2.1.js"></script>
         <script>
-            crossxhr_setup('http://cdn.findawayworld.com/static/swf/vendor/crossxhr.swf');
+            crossxhr_setup('dist/crossxhr-0.2.1.swf');
             var parameterize = function (object) {
                 var pArr = [];
                 _.each(object, function (value, key, list) {
@@ -83,7 +83,7 @@
 
             function test_get() {
                 makeRequest({
-                    url: 'https://apitest.findawayworld.com/v1/accounts/4444/audiobooks?sid=15f1231b-6c29-4600-b927-4624c7d9c882',
+                    url: 'http://crossxhrtest.findawayworld.com/example.json',
                     method: 'GET'
                 });
             }
