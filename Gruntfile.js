@@ -1,5 +1,11 @@
 module.exports = function (grunt) {
     'use strict';
+    var isWin = !!process.platform.match(/^win/),
+
+        mxmlcPath = function () {
+            var mxmlc = isWin ? 'mxmlc.exe' : 'mxmlc';
+            return process.env['FLEX_HOME'] + '/bin/' + mxmlc;
+        };
 
     var fullBanner = [
         '/*!\n',
@@ -10,6 +16,10 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        build: {
+            js: ['clean:js', 'jshint:before', 'concat', 'uglify:sdk'],
+            swf: ['clean:swf', 'mxmlc']
+        },
         concat: {
             options: {
                 banner: fullBanner
@@ -23,18 +33,24 @@ module.exports = function (grunt) {
             }
         },
         clean: {
-            dist: {
+            js: {
                 files: [{
                     dot: true,
                     src: [
-                        '.tmp',
                         'dist/*.js',
-                        'dist/*.swf',
                         '!dist/.git*'
                     ]
                 }]
             },
-            server: '.tmp'
+            swf: {
+                files: [{
+                    dot: true,
+                    src: [
+                        'dist/*.swf',
+                        '!dist/.git*'
+                    ]
+                }]
+            }
         },
         uglify: {
             options: {
@@ -80,16 +96,6 @@ module.exports = function (grunt) {
             }
         },
         mxmlc: {
-            options: {
-                rawConfig: '-compress=true -static-link-runtime-shared-libraries=true -optimize=true -strict=true -link-report=true'
-            },
-            flash: {
-                files: {
-                    'dist/<%= pkg.name %>-<%= pkg.version %>.swf': ['flash_crossxhr/HttpRequesterManager.as']
-                }
-            }
-        },
-        ant: {
             flash: {
                 output: 'dist/<%= pkg.name %>-<%= pkg.version %>.swf',
                 input: 'src/actionscript/HttpRequesterManager.as'
@@ -97,11 +103,18 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerMultiTask('ant', function () {
+    grunt.registerMultiTask('mxmlc', function () {
         var done = this.async();
         grunt.util.spawn({
-            cmd: 'ant',
-            args: ['-Doutput=' + this.data.output, '-Dinput=' + this.data.input],
+            cmd: mxmlcPath(),
+            args: [
+                this.data.input,
+                '-compress=true',
+                '-static-link-runtime-shared-libraries=true',
+                '-optimize=true',
+                '-strict=true',
+                '-output=' + this.data.output
+            ],
             grunt: false
         }, function (error, result, code) {
             grunt.log.write(result + '\n');
@@ -117,7 +130,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('build', ['clean:dist', 'ant', 'jshint:before', 'concat']);
+    grunt.task.registerMultiTask('build', function () {
+        grunt.task.run(this.data);
+    });
+
     grunt.registerTask('min',   ['build', 'uglify:sdk']);
     grunt.registerTask('pkg',   ['buildExample', 'min', 'compress:pkg']);
 };

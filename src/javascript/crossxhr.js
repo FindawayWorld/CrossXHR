@@ -77,6 +77,8 @@
         self.id = crossxhr_objects.length;
         crossxhr_objects.push(self);
 
+        self.readyState = 0;
+
         self.debug = options.debug || false;
 
         return this;
@@ -93,6 +95,7 @@
 
     CrossXHR.prototype.open = function (arg1, arg2) {
         var self = this;
+        self.readyState = 1;
         self.gateway.create(self.id, arg1, arg2);
         return this;
     };
