@@ -1,4 +1,3 @@
-
 (function (window, document) {
     'use strict';
 
@@ -40,14 +39,14 @@
         };
 
         var params = {
-            allowscriptaccess:"always",
+            'allowscriptaccess': "always",
             'hasPriority': 'true'
         },
         span1 = document.createElement('span'),
         span2 = document.createElement('span');
 
         span1.style.position = 'absolute';
-        span1.style.bottom = '-9999px';
+        span1.style.top = '-9999px';
         span1.style.left = '-9999px';
         span1.style.height = '6px';
         span1.style.width = '6px';
@@ -128,8 +127,6 @@
             if(self.onload) {
                 self.onload.apply(data);
             }
-            // Remove from objects array.
-            //crossxhr_objects.splice(self.id, 1);
         }, 10);
     };
 

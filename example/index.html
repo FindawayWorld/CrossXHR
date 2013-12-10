@@ -1,0 +1,31 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CrossXHR Example</title>
+        <link rel="stylesheet" href="css/foundation.css" />
+        <script src="js/vendor/custom.modernizr.js"></script>
+    </head>
+    <body>
+        <div class="row">
+            <div class="large_12">
+                <h1>Cross XHR demo</h1>
+                <p class="alert-box alert"><em>This demo requires flash to be installed in your browser</em></p>
+
+                <button class="js-request button" data-method="GET" data-url="http://crossxhrtest.findawayworld.com/example.json">GET request</button>
+
+                <button class="js-request button" data-method="GET" data-url="http://crossxhrtest.findawayworld.com/x.json">GET request error</button>
+
+                <button class="js-request button" data-method="POST" data-url="http://crossxhrtest.findawayworld.com/example.json" data-data='{"foo":"bar", "bar": "baz"}'>POST request</button>
+
+                <button class="js-request button" data-method="PUT" data-url="http://crossxhrtest.findawayworld.com/example.json" data-data='{"foo":"bar", "bar": "baz"}'>PUT request</button>
+
+                <button class="js-request button" data-method="DELETE" data-url="http://crossxhrtest.findawayworld.com/example.json">DELETE request</button>
+            </div>
+        </div>
+        <script src="js/vendor/jquery.js"></script>
+        <script src="../dist/CrossXHR-0.2.1.js"></script>
+        <script src="js/example.js"></script>
+    </body>
+</html>

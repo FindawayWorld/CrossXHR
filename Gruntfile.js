@@ -18,7 +18,7 @@ module.exports = function (grunt) {
                 dest: "dist/<%= pkg.name %>-<%= pkg.version %>.js",
                 src: [
                     "vendor/swfobject/swfobject/src/swfobject.js",
-                    "crossxhr.js"
+                    "src/javascript/crossxhr.js"
                 ]
             }
         },
@@ -29,6 +29,7 @@ module.exports = function (grunt) {
                     src: [
                         '.tmp',
                         'dist/*.js',
+                        'dist/*.swf',
                         '!dist/.git*'
                     ]
                 }]
@@ -47,12 +48,12 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
-            before: ['crossxhr.js'],
-            after: ['dist/<%= pkg.name %>-<%= pkg.version %>.js'],
+            before: ['src/javascript/crossxhr.js'],
+            after: ['dist/<%= pkg.name %>-<%= pkg.version %>.js']
         },
         watch : {
-            files: 'crossxhr.js',
-            tasks: ['min']
+            files: 'src/javascript/crossxhr.js',
+            tasks: ['build']
         },
         compress: {
             pkg: {
@@ -77,7 +78,36 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+        mxmlc: {
+            options: {
+                rawConfig: '-compress=true -static-link-runtime-shared-libraries=true -optimize=true -strict=true -link-report=true'
+            },
+            flash: {
+                files: {
+                    'dist/<%= pkg.name %>-<%= pkg.version %>.swf': ['flash_crossxhr/HttpRequesterManager.as']
+                }
+            }
+        },
+        ant: {
+            flash: {
+                output: 'dist/<%= pkg.name %>-<%= pkg.version %>.swf',
+                input: 'src/actionscript/HttpRequesterManager.as'
+            }
         }
+    });
+
+    grunt.registerMultiTask('ant', function () {
+        var done = this.async();
+        grunt.util.spawn({
+            cmd: 'ant',
+            args: ['-Doutput=' + this.data.output, '-Dinput=' + this.data.input],
+            grunt: false
+        }, function (error, result, code) {
+            grunt.log.write(result + '\n');
+            grunt.log.write('Code: ' + code + '\n');
+            done();
+        });
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -87,21 +117,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('ant', function () {
-        var done = this.async();
-        grunt.util.spawn({
-            cmd: 'ant',
-            grunt: false,
-            opts: {
-                cwd: 'flash_crossxhr'
-            }
-        }, function (error, result, code) {
-            done();
-        });
-    });
-
-    grunt.registerTask('deps',  ['uglify:deps'])
-    grunt.registerTask('build', ['clean:dist', 'jshint:before','concat']);
+    grunt.registerTask('build', ['clean:dist', 'ant', 'jshint:before', 'concat']);
     grunt.registerTask('min',   ['build', 'uglify:sdk']);
     grunt.registerTask('pkg',   ['buildExample', 'min', 'compress:pkg']);
 };
