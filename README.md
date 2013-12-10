@@ -81,6 +81,8 @@ Once you have all requirements installed make sure you set your environment vari
 
     echo FLEX_HOME = /path/to/flex_sdk
 
+You will probably want to put this in your `.<shell>rc` file to prevent having to set it manually every time.
+
 ### Building the javascript and swf files
 
     $ grunt build:js // builds the javascript files
