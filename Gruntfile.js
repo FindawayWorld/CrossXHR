@@ -1,5 +1,8 @@
 module.exports = function (grunt) {
     'use strict';
+
+    require('load-grunt-tasks')(grunt);
+
     var isWin = !!process.platform.match(/^win/),
 
         mxmlcPath = function () {
@@ -122,13 +125,6 @@ module.exports = function (grunt) {
             done();
         });
     });
-
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-compress');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.task.registerMultiTask('build', function () {
         grunt.task.run(this.data);
