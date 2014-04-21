@@ -112,6 +112,7 @@ module.exports = function (grunt) {
             cmd: mxmlcPath(),
             args: [
                 this.data.input,
+                '--include-libraries=src/actionscript/vendor/as3corelib.swc',
                 '-compress=true',
                 '-static-link-runtime-shared-libraries=true',
                 '-optimize=true',
