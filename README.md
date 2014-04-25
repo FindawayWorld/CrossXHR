@@ -18,7 +18,7 @@ Include `CrossXHR-<version>.js` at the bottom of your document (before the closi
 _\* the swf path should be relative to your page or absolute with domain._
 
 ### Make request
-Making requests with `CrossXHR` is easy since it's API is the same as the standard Javascript XmlHttpRequest.
+Making requests with `CrossXHR` is easy since its API is the same as the standard Javascript XmlHttpRequest.
 
 To make a request first create a new instance of `CrossXHR` and assign it to a variable.
 
