@@ -1,18 +1,21 @@
-
 (function (window, document) {
     'use strict';
 
     var crossxhr_objects = [],
-        crossxhr_ready = false,
-        CrossXHR;
+        CrossXHR,
+        gatewayName = 'FlashHttpRequest_gateway',
+        getGateway = function () {
+            if (navigator.appName.indexOf("Microsoft") != -1) {
+                return window[gatewayName];
+            } else {
+                return document[gatewayName];
+            }
+            return false;
+        };
 
     // Legacy 'ready' flag
     window.FlashHttpRequest_ready = false;
-
-    window.crossxhr_flashInit = function () {
-        crossxhr_ready = true;
-        FlashHttpRequest_ready = 1;
-    };
+    window.crossxhr_ready = false;
 
     window.crossxhr_callback = function (id, status, data) {
         crossxhr_objects[id].handler(status, data);
@@ -22,36 +25,50 @@
         crossxhr_objects[id].log(message);
     };
 
-    window.crossxhr_setup = function (swfUrl) {
-        if (document.getElementById("FlashHttpRequest_gateway")) {
+    window.crossxhr_setup = function (swfUrl, callback) {
+        if (getGateway()) {
             return this;
         }
 
-        var span1 = document.createElement('span'),
-            span2 = document.createElement('span');
+        window.crossxhr_flashInit = function () {
+            crossxhr_ready = true;
+            FlashHttpRequest_ready = 1;
+            if (typeof callback === 'function') {
+                callback();
+            }
+        };
+
+        var params = {
+            'allowscriptaccess': "always",
+            'hasPriority': 'true'
+        },
+        span1 = document.createElement('span'),
+        span2 = document.createElement('span');
 
         span1.style.position = 'absolute';
-        span1.style.top = '0';
-        span1.style.left = '0';
-        span1.style.height = '1px';
-        span1.style.width = '1px';
+        span1.style.top = '-9999px';
+        span1.style.left = '-9999px';
+        span1.style.height = '6px';
+        span1.style.width = '6px';
         span1.style.display = 'block';
+        span1.style.zIndex = '10000';
 
-        span2.id = 'FlashHttpRequest_gateway';
+        span2.id = gatewayName;
 
         span1.appendChild(span2);
         document.body.appendChild(span1);
-        swfobject.embedSWF(swfUrl, span2, 1, 1, 9, "expressInstall.swf", {}, {wmode: 'transparent', allowscriptaccess:"always"});
+        swfobject.embedSWF(swfUrl, gatewayName, 6, 6, 9, "expressInstall.swf", {}, params);
         return this;
     };
 
     CrossXHR = function (options) {
-        if (!crossxhr_ready || !FlashHttpRequest_ready) {
-            throw new Error('CrossXHR flash was not loaded.');
-        }
         var self = this;
+        if (!window.crossxhr_ready || !window.FlashHttpRequest_ready) {
+            throw new Error('Flash not loaded.');
+        }
+
         options = options || {};
-        self.gateway = document.getElementById("FlashHttpRequest_gateway");
+        self.gateway = getGateway();
 
         if (!self.gateway) {
             throw new Error('You need to run setupCrossXHR() first.');
@@ -59,6 +76,8 @@
 
         self.id = crossxhr_objects.length;
         crossxhr_objects.push(self);
+
+        self.readyState = 0;
 
         self.debug = options.debug || false;
 
@@ -76,6 +95,7 @@
 
     CrossXHR.prototype.open = function (arg1, arg2) {
         var self = this;
+        self.readyState = 1;
         self.gateway.create(self.id, arg1, arg2);
         return this;
     };
@@ -110,8 +130,6 @@
             if(self.onload) {
                 self.onload.apply(data);
             }
-            // Remove from objects array.
-            crossxhr_objects.splice(self.id, 1);
         }, 10);
     };
 

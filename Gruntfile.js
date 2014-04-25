@@ -1,6 +1,15 @@
 module.exports = function (grunt) {
     'use strict';
 
+    require('load-grunt-tasks')(grunt);
+
+    var isWin = !!process.platform.match(/^win/),
+
+        mxmlcPath = function () {
+            var mxmlc = isWin ? 'mxmlc.exe' : 'mxmlc';
+            return process.env['FLEX_HOME'] + '/bin/' + mxmlc;
+        };
+
     var fullBanner = [
         '/*!\n',
         ' * CrossXHR v<%= pkg.version %>\n',
@@ -10,6 +19,10 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        build: {
+            js: ['clean:js', 'jshint:before', 'concat', 'uglify:sdk'],
+            swf: ['clean:swf', 'mxmlc']
+        },
         concat: {
             options: {
                 banner: fullBanner
@@ -18,22 +31,29 @@ module.exports = function (grunt) {
                 dest: "dist/<%= pkg.name %>-<%= pkg.version %>.js",
                 src: [
                     "vendor/swfobject/swfobject/src/swfobject.js",
-                    "crossxhr.js"
+                    "src/javascript/crossxhr.js"
                 ]
             }
         },
         clean: {
-            dist: {
+            js: {
                 files: [{
                     dot: true,
                     src: [
-                        '.tmp',
-                        'dist/*',
+                        'dist/*.js',
                         '!dist/.git*'
                     ]
                 }]
             },
-            server: '.tmp'
+            swf: {
+                files: [{
+                    dot: true,
+                    src: [
+                        'dist/*.swf',
+                        '!dist/.git*'
+                    ]
+                }]
+            }
         },
         uglify: {
             options: {
@@ -47,12 +67,12 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
-            before: ['crossxhr.js'],
-            after: ['dist/<%= pkg.name %>-<%= pkg.version %>.js'],
+            before: ['src/javascript/crossxhr.js'],
+            after: ['dist/<%= pkg.name %>-<%= pkg.version %>.js']
         },
         watch : {
-            files: 'crossxhr.js',
-            tasks: ['min']
+            files: 'src/javascript/crossxhr.js',
+            tasks: ['build']
         },
         compress: {
             pkg: {
@@ -77,18 +97,40 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+        mxmlc: {
+            flash: {
+                output: 'dist/<%= pkg.name %>-<%= pkg.version %>.swf',
+                input: 'src/actionscript/HttpRequesterManager.as'
+            }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-compress');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.registerMultiTask('mxmlc', function () {
+        var done = this.async();
+        grunt.util.spawn({
+            cmd: mxmlcPath(),
+            args: [
+                this.data.input,
+                '--include-libraries=src/actionscript/vendor/as3corelib.swc',
+                '-compress=true',
+                '-static-link-runtime-shared-libraries=true',
+                '-optimize=true',
+                '-strict=true',
+                '-output=' + this.data.output
+            ],
+            grunt: false
+        }, function (error, result, code) {
+            grunt.log.write(result + '\n');
+            grunt.log.write('Code: ' + code + '\n');
+            done();
+        });
+    });
 
-    grunt.registerTask('deps',  ['uglify:deps'])
-    grunt.registerTask('build', ['clean:dist', 'jshint:before','concat']);
+    grunt.task.registerMultiTask('build', function () {
+        grunt.task.run(this.data);
+    });
+
     grunt.registerTask('min',   ['build', 'uglify:sdk']);
     grunt.registerTask('pkg',   ['buildExample', 'min', 'compress:pkg']);
 };

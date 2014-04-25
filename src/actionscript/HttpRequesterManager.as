@@ -16,17 +16,18 @@
         ExternalInterface.addCallback("addHeader", addHeader);
         ExternalInterface.addCallback("send", send);
         ExternalInterface.addCallback("finished", finished);
-        ExternalInterface.call("crossxhr_flashInit");
         objects = new Object();
+        ExternalInterface.call("crossxhr_flashInit");
     }
 
 	public function log(id:Number, msg:*):void {
-		ExternalInterface.call("crossxhr_log", id, msg);
+		ExternalInterface.call("crossxhr_log", id, msg.toString());
 	}
 
     public function create(id:Number, method:String, url:String):void {
         var requester:HttpRequester = new HttpRequester(this, id, method, url);
         objects[id] = requester;
+        log(id, 'Created ' + id);
     }
 
     public function abort(id:Number):void {
@@ -40,7 +41,7 @@
         objects[id].send(content);
     }
 
-    public function handler(id:String, status:String, data:String):void {
+    public function handler(id:String, status:String, data:*):void {
         ExternalInterface.call("crossxhr_callback", id, status, data);
     }
     public function finished(id:String):void {
